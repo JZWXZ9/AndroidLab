@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AircraftWarAndroidLab"
+rootProject.name = "AircraftWar2026"
 include(":app")
