@@ -2,12 +2,12 @@ package edu.hitsz;
 
 import android.os.Bundle;
 import android.view.MotionEvent;
+
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private MySurfaceView mMySurfaceView;
-    private OnBackPressedCallback mBackPressedCallback;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
