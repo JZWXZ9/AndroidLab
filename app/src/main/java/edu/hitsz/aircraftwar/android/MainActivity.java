@@ -1,0 +1,19 @@
+package edu.hitsz.aircraftwar.android;
+
+import android.app.Activity;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.widget.TextView;
+
+public final class MainActivity extends Activity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        TextView title = new TextView(this);
+        title.setText(R.string.app_name);
+        title.setTextSize(24);
+        title.setGravity(Gravity.CENTER);
+        setContentView(title);
+    }
+}
