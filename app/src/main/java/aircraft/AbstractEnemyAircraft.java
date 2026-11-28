@@ -101,10 +101,8 @@ public abstract class AbstractEnemyAircraft extends AbstractAircraft
         isFrozen = !slowOnly;
         speedX = slowOnly ? originalSpeedX / 2 : 0;
         speedY = slowOnly ? originalSpeedY / 2 : 0;
-        // 毫秒向上取整到一个逻辑步。-1 对应原规则中的永久冰冻。
-        freezeTicks = freezeDuration > 0
-                ? (int) ((freezeDuration + Main.TICK_DURATION_MS - 1) / Main.TICK_DURATION_MS)
-                : -1;
+        // 将毫秒换算成 40 ms 逻辑步数；freezeDuration 为 0 时记为 -1，对应原规则中的永久冰冻。
+        freezeTicks = freezeDuration > 0 ? (int) (freezeDuration / Main.TICK_DURATION_MS) : -1;
     }
 
     /** 每步推进冰冻计时，效果结束时恢复首次受影响前的速度。 */
