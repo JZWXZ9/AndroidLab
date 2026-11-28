@@ -3,7 +3,10 @@ package game;
 import application.ImageManager;
 import enums.DifficultyEnums;
 
-public class EasyGame extends AbstractGame {
+public class EasyGame extends BaseGame  {
+    public EasyGame(android.content.Context context) {
+        super(context);
+    }
 
     @Override
     protected void initDifficultyParams() {

@@ -1,37 +1,35 @@
 package main;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.view.MotionEvent;
+import game.BaseGame;
+import game.EasyGame;
 
-import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AppCompatActivity;
+public class MainActivity extends Activity {
+    private BaseGame game;
 
-public class MainActivity extends AppCompatActivity {
-
+    /** 创建并挂载简单模式的游戏视图。 */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mMySurfaceView = new MySurfaceView(this);
-        setContentView(mMySurfaceView);
-
-        //注册返回键回调
-        mBackPressedCallback = new OnBackPressedCallback(true) { // true = 初始启用回调
-            @Override
-            public void handleOnBackPressed() {
-                //关闭当前Activity
-                finish();
-            }
-        };
-        //将回调注册到 Activity 的返回键分发器
-        getOnBackPressedDispatcher().addCallback(this, mBackPressedCallback);
+        // Activity 本身就是 Context，把当前页面的环境传给简单模式的游戏视图。
+        game = new EasyGame(this);
+        setContentView(game);
     }
 
+    /** 将 Activity 恢复事件转交给游戏视图。 */
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            mMySurfaceView.x = event.getX();
-            mMySurfaceView.y = event.getY();
-        }
-        return  true;
+    protected void onResume() {
+        super.onResume();
+        // 页面已经恢复。BaseGame 会再检查 Surface 是否可以绘制。
+        game.onHostResume();
+    }
+
+    /** 在 Activity 暂停时通知游戏视图停止更新和绘制。 */
+    @Override
+    protected void onPause() {
+        // 页面暂停时停止绘图，避免应用切到后台后仍重复画帧。
+        game.onHostPause();
+        super.onPause();
     }
 }

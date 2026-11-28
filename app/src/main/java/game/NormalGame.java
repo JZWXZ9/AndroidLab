@@ -8,7 +8,10 @@ import enums.DifficultyEnums;
  * - 有Boss（血量不变）
  * - 难度递进：敌机生成周期变短、敌机速度增加
  */
-public class NormalGame extends AbstractGame {
+public class NormalGame extends BaseGame {
+    public NormalGame(android.content.Context context) {
+        super(context);
+    }
 
     // 难度递进参数
     private double originalEnemySpawnCycle;

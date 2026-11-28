@@ -8,7 +8,11 @@ import enums.DifficultyEnums;
  * - 有Boss（每次召唤血量递增）
  * - 难度递进：敌机生成周期、敌机速度、英雄射击周期（变慢）
  */
-public class HardGame extends AbstractGame {
+public class HardGame extends BaseGame {
+
+    public HardGame(android.content.Context context) {
+        super(context);
+    }
 
     // 难度递进参数
     private double originalEnemySpawnCycle;

@@ -1,5 +1,7 @@
 package game;
 
+import android.graphics.Bitmap;
+
 import aircraft.AbstractEnemyAircraft;
 import aircraft.BossEnemy;
 import aircraft.HeroAircraft;
@@ -50,7 +52,8 @@ public abstract class AbstractGame extends Pane {
 
     protected final Canvas canvas;
     protected final GraphicsContext gc;
-    protected Image backGroundImage;
+    // Bitmap
+    protected Bitmap backGroundImage;
 
     protected AnimationTimer timer;
     protected long lastNanoTime = 0L;

@@ -1,12 +1,10 @@
 package basic;
 
+import android.graphics.Bitmap;
+
 import aircraft.AbstractAircraft;
 import application.ImageManager;
 import application.Main;
-
-import javafx.scene.image.Image;
-
-import java.awt.image.BufferedImage;
 
 /**
  * 可飞行对象的父类
@@ -24,7 +22,7 @@ public abstract class AbstractFlyingObject {
     protected int speedY;
 
     //图片, null 表示未设置
-    protected Image image = null;
+    protected Bitmap image = null;
 
     //x 轴长度，根据图片尺寸获得, -1 表示未设置
     protected int width = -1;
@@ -118,7 +116,7 @@ public abstract class AbstractFlyingObject {
         return Math.toDegrees(Math.atan2(getSpeedY(), getSpeedX()));
     }
 
-    public Image getImage() {
+    public Bitmap getImage() {
         if (image == null){
             image = ImageManager.get(this);
         }
@@ -128,7 +126,7 @@ public abstract class AbstractFlyingObject {
     public int getWidth() {
         if (width == -1){
             // 若未设置，则查询图片宽度并设置
-            Image resolved = ImageManager.get(this);
+            Bitmap resolved = ImageManager.get(this);
             if (resolved == null) {
                 throw new IllegalStateException(this.getClass().getName() + " has no image!");
             }
@@ -140,7 +138,7 @@ public abstract class AbstractFlyingObject {
     public int getHeight() {
         if (height == -1){
             // 若未设置，则查询图片高度并设置
-            Image resolved = ImageManager.get(this);
+            Bitmap resolved = ImageManager.get(this);
             if (resolved == null) {
                 throw new IllegalStateException(this.getClass().getName() + " has no image!");
             }

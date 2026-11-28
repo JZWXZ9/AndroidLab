@@ -1,35 +1,12 @@
 package application;
 
-import enums.DifficultyEnums;
-import enums.SceneEnums;
-import ui.SceneManager;
-import javafx.application.Application;
-import javafx.stage.Stage;
-
-import java.io.IOException;
-
 /**
- * 程序入口
- * @author hitsz & doctxing
+ * 保存游戏区的逻辑宽高，供飞机模型、工厂和 Android 绘图共用。
  */
-public class Main extends Application {
+public final class Main {
 
     public static final int WINDOW_WIDTH = 512;
     public static final int WINDOW_HEIGHT = 768;
 
-    private final SceneManager sceneManager = SceneManager.getInstance();
-
-    public static void main(String[] args) {
-        System.out.println("Aircraft War Start!");
-        launch(args);
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws IOException {
-        GameResultHandler.setPrimaryStage(primaryStage);
-
-        sceneManager.init(primaryStage);
-
-        System.out.println("Game Started!");
-    }
+    private Main() {}
 }
