@@ -3,9 +3,6 @@ package props;
 import aircraft.AbstractEnemyAircraft;
 import application.ImageManager;
 import bullet.BaseBullet;
-import shootStrategy.FanShapedShoot;
-import shootStrategy.ScatterShoot;
-import shootStrategy.StraightShoot;
 
 import java.util.List;
 
@@ -15,22 +12,10 @@ public class BulletPlusProps extends AbstractProps{
         imageWidth = (int) ImageManager.BULLET_PROP.getWidth();
     }
 
+    /** 通知英雄机切换到增强火力道具的扇形射击效果。 */
+    @Override
     public void functionOnHero() {
-        System.out.println("Fire Supply!");
-        Runnable r = () -> {
-            try {
-                if(heroAircraft.getShootNum() <= 5) {
-                    heroAircraft.setShootNum(heroAircraft.getShootNum()+1);
-                }
-                heroAircraft.setShootStrategy(List.of(new FanShapedShoot(heroAircraft)));
-                Thread.sleep(10000); //持续10s
-                heroAircraft.setShootStrategy(List.of(new StraightShoot(heroAircraft)));
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        };
-
-        new Thread(r, "ScatterShootThread").start();
+        heroAircraft.activateWeapon(true);
     }
 
     @Override

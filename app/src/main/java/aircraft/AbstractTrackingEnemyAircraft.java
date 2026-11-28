@@ -3,9 +3,8 @@ package aircraft;
 import application.Main;
 
 public abstract class AbstractTrackingEnemyAircraft extends AbstractEnemyAircraft{
-    private boolean isTracking = true;
-    private final long SPAWN_TIME;
-    private static final long TRACKING_TIME = 1800; // 1.8秒
+    private static final int TRACKING_DURATION_TICKS = 1800 / Main.TICK_DURATION_MS;
+    private int trackingTicks;
     static final HeroAircraft HERO_AIRCRAFT = HeroAircraft.getInstance();
     private final double TOTAL_SPEED;
     private final int BULLET_SPEED = 20;
@@ -14,15 +13,12 @@ public abstract class AbstractTrackingEnemyAircraft extends AbstractEnemyAircraf
 
     public AbstractTrackingEnemyAircraft(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp);
-        this.SPAWN_TIME = System.currentTimeMillis();
-        this.TOTAL_SPEED = Math.sqrt(Math.pow(speedX, 2) + Math.pow(speedY, 2));
+        this.TOTAL_SPEED = Math.hypot(speedX, speedY);
     }
 
+    /** 判断敌机是否还在主动追踪英雄的时间窗口内。 */
     public boolean keepTracking() {
-        if(System.currentTimeMillis() - SPAWN_TIME >= TRACKING_TIME) {
-            isTracking = false;
-        }
-        return isTracking;
+        return trackingTicks < TRACKING_DURATION_TICKS;
     }
 
     @Override
@@ -30,22 +26,23 @@ public abstract class AbstractTrackingEnemyAircraft extends AbstractEnemyAircraf
         return TRACKING_BULLET_CYCLE;
     }
 
+    /** 每个逻辑步追踪并移动一次。冻结期间位置和追踪计时一起暂停。 */
     @Override
     public void forward() {
-        // 更新速度
+        if (isFrozen) {
+            return;
+        }
         if (keepTracking()) {
+            trackingTicks++;
             double xDistance = HERO_AIRCRAFT.getLocationX() - this.getLocationX();
             double yDistance = HERO_AIRCRAFT.getLocationY() - this.getLocationY();
-            double totalDistance = Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
+            // 把指向英雄的向量归一化，保留原飞行速度。中心重合时避免除以零。
+            double totalDistance = Math.max(1, Math.hypot(xDistance, yDistance));
             speedX = (int) (TOTAL_SPEED * xDistance / totalDistance);
             speedY = (int) (TOTAL_SPEED * yDistance / totalDistance);
         }
         super.forward();
         if (locationX <= 0 || locationX >= Main.WINDOW_WIDTH || locationY >= Main.WINDOW_HEIGHT) {
-            // 横向超出边界后反向
-            vanish();
-        }
-        if (locationY >= Main.WINDOW_HEIGHT ) {
             vanish();
         }
 

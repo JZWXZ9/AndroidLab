@@ -25,7 +25,7 @@ public abstract class AbstractEnemyFactory {
     public AbstractEnemyAircraft createEnemyByProbability(int difficultyFactor) {
         checkDifficultyFactorAndUpdate(difficultyFactor);
 
-        if (random.nextInt(1, 101) <= probabilityForEnemySpawning) {
+        if (random.nextInt(100) + 1 <= probabilityForEnemySpawning) {
             probabilityForEnemySpawning = defaultSpawningProbability;
             return createEnemy();
         }

@@ -3,9 +3,7 @@ package bullet;
 import application.Main;
 import basic.AbstractFlyingObject;
 import observer.BombObserver;
-import observer.BombSubject;
 import observer.FreezeObserver;
-import observer.FreezeSubject;
 
 /**
  * 子弹基类
@@ -15,6 +13,7 @@ public abstract class BaseBullet extends AbstractFlyingObject implements BombObs
 
     private int power = 10;
     protected boolean isFrozen = false;
+    private int freezeTicks;
 
 
     public BaseBullet(int locationX, int locationY, int speedX, int speedY, int power) {
@@ -54,18 +53,18 @@ public abstract class BaseBullet extends AbstractFlyingObject implements BombObs
         this.vanish();
     }
 
+    /** 应用 5 秒的子弹冰冻，刷新效果时长。 */
     @Override
     public void onFreezeStart() {
         this.isFrozen = true;
-        // 5秒后恢复
-        new Thread(() -> {
-            try {
-                Thread.sleep(5000);
-                this.isFrozen = false;
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }).start();
+        freezeTicks = 5_000 / Main.TICK_DURATION_MS;
+    }
+
+    /** 游戏线程每步推进一次计时，倒计时结束后允许子弹继续移动。 */
+    public void tickEffects() {
+        if (freezeTicks > 0 && --freezeTicks == 0) {
+            isFrozen = false;
+        }
     }
 }
 

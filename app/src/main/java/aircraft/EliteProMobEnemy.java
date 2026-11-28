@@ -46,22 +46,8 @@ public class EliteProMobEnemy extends AbstractEnemyAircraft{
 
     @Override
     public void onFreezeStart() {
-        int origSpeedX = this.speedX;
-        int origSpeedY = this.speedY;
-        this.speedX = origSpeedX / 2;
-        this.speedY = origSpeedY / 2;
-        // 不设置 isFrozen，所以能继续射击
-
-        new Thread(() -> {
-            try {
-                Thread.sleep(freezeDuration);
-                this.speedX = origSpeedX;
-                this.speedY = origSpeedY;
-                System.out.println("Ace enemy recovered!");
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }).start();
+        // Pro 敌机受到冰冻道具影响时只减速，射击照常进行。
+        applyFreeze(true);
     }
 
     @Override

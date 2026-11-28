@@ -1,41 +1,43 @@
 package bullet;
 
 import aircraft.HeroAircraft;
+import application.Main;
 
 public class EnemyTrackingBullet extends EnemyBullet{
-    private final long SPAWN_TIME;
-    private static final long DURATION_TIME = 5000;
+    private static final int DURATION_TICKS = 5_000 / Main.TICK_DURATION_MS;
+    private int ageTicks;
     private static final HeroAircraft hero = HeroAircraft.getInstance();
     private final double CURRENT_SPEED;
 
     public EnemyTrackingBullet(int locationX, int locationY, int speedX, int speedY, int power) {
         super(locationX, locationY, speedX, speedY, power);
-        this.SPAWN_TIME = System.currentTimeMillis();
-        this.CURRENT_SPEED = Math.sqrt(Math.pow(speedX, 2) + Math.pow(speedY, 2));
+        this.CURRENT_SPEED = Math.hypot(speedX, speedY);
     }
 
-    // 判断是否应该消失，存活时间：10s
-    private boolean shouldVanish() {
-        return System.currentTimeMillis() - SPAWN_TIME > DURATION_TIME;
-    }
-
-    // 更新速度和消失逻辑
+    /** 推进追踪子弹的寿命，并根据英雄当前位置调整飞行方向。 */
     public void update() {
-        if(this.shouldVanish()) {
-            this.vanish();
+        if (ageTicks >= DURATION_TICKS) {
+            vanish();
+            return;
         }
-        int heroLocationX = hero.getLocationX();
-        int heroLocationY = hero.getLocationY();
-        double distanceOfHeroAndBullet = Math.sqrt(Math.pow((heroLocationX - this.getLocationX()), 2) +
-                Math.pow((heroLocationY - this.getLocationY()), 2));
-        this.speedX = (int) (CURRENT_SPEED * (heroLocationX - this.getLocationX()) / distanceOfHeroAndBullet);
-        this.speedY = (int) (CURRENT_SPEED * (heroLocationY - this.getLocationY()) / distanceOfHeroAndBullet);
+        ageTicks++;
+        int dx = hero.getLocationX() - getLocationX();
+        int dy = hero.getLocationY() - getLocationY();
+        double distance = Math.max(1, Math.hypot(dx, dy));
+        speedX = (int) (CURRENT_SPEED * dx / distance);
+        speedY = (int) (CURRENT_SPEED * dy / distance);
     }
 
+    /** 每步先更新追踪方向，再移动仍有效的子弹。 */
     @Override
     public void forward() {
+        if (isFrozen) {
+            return;
+        }
         update();
-        super.forward();
+        if (!notValid()) {
+            super.forward();
+        }
     }
 
 }

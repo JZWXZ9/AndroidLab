@@ -1,5 +1,6 @@
 package aircraft;
 
+import application.Main;
 import bullet.BaseBullet;
 import observer.BombObserver;
 import observer.FreezeObserver;
@@ -12,16 +13,20 @@ public abstract class AbstractEnemyAircraft extends AbstractAircraft
         implements BombObserver, FreezeObserver {
 
     public boolean isFrozen = false;
-    // 原有的 speedX 和 speedY 备份
+    private boolean freezeEffectActive;
+
+    // 缓存首次受冻前的速度，解冻时恢复。
     protected int originalSpeedX;
-    protected int originalSpeedY;// 新增字段
-    protected long freezeDuration = 0;  // 冰冻时间（毫秒），0表示永久
-    static final List<String> PROPS_LIST = List.of("BloodProps", "BulletProps", "BulletPlusProps", "BombProps", "FreezeProps");
-    protected List<Integer> probabilityForEachProp; //百分比概率
-    static Random random = new Random();
+    protected int originalSpeedY;
     protected int score;
     protected int shootCounter = 0;
     protected int shootCycle = 0;
+    private int freezeTicks;
+
+    protected long freezeDuration = 0;  // 冰冻时间（毫秒），0 表示永久。
+    static final List<String> PROPS_LIST = List.of("BloodProps", "BulletProps", "BulletPlusProps", "BombProps", "FreezeProps");
+    protected List<Integer> probabilityForEachProp; // 百分比概率。
+    static Random random = new Random();
 
     public AbstractEnemyAircraft(int locationX, int locationY, int speedX, int speedY, int hp) {
         super(locationX, locationY, speedX, speedY, hp);
@@ -42,7 +47,7 @@ public abstract class AbstractEnemyAircraft extends AbstractAircraft
             return Collections.emptyList();
         }
         for (int i=0; i<PROPS_LIST.size(); i++) {
-            if (random.nextInt(1, 101) <= probabilityForEachProp.get(i)) {
+            if (random.nextInt(100) + 1 <= probabilityForEachProp.get(i)) {
                     props.add(PropsFactory.createProps(PROPS_LIST.get(i), locationX, locationY));
             }
         }
@@ -80,27 +85,35 @@ public abstract class AbstractEnemyAircraft extends AbstractAircraft
         this.vanish();
     }
 
-    // 实现 FreezeObserver 接口
+    /** 冰冻道具通知敌机停止移动和射击。 */
     @Override
     public void onFreezeStart() {
-        int origSpeedX = this.speedX;
-        int origSpeedY = this.speedY;
-        this.speedX = 0;
-        this.speedY = 0;
-        this.isFrozen = true;
+        applyFreeze(false);
+    }
 
-        // FreezeDuration == 0: 一直冰冻
-        if (freezeDuration > 0) {
-            new Thread(() -> {
-                try {
-                    Thread.sleep(freezeDuration);
-                    this.speedX = origSpeedX;
-                    this.speedY = origSpeedY;
-                    this.isFrozen = false;
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
-            }).start();
+    /** 记录原速度并开始冰冻或减速，重复拾取只刷新剩余时间。 */
+    protected void applyFreeze(boolean slowOnly) {
+        if (!freezeEffectActive) {
+            originalSpeedX = speedX;
+            originalSpeedY = speedY;
+        }
+        freezeEffectActive = true;
+        isFrozen = !slowOnly;
+        speedX = slowOnly ? originalSpeedX / 2 : 0;
+        speedY = slowOnly ? originalSpeedY / 2 : 0;
+        // 毫秒向上取整到一个逻辑步。-1 对应原规则中的永久冰冻。
+        freezeTicks = freezeDuration > 0
+                ? (int) ((freezeDuration + Main.TICK_DURATION_MS - 1) / Main.TICK_DURATION_MS)
+                : -1;
+    }
+
+    /** 每步推进冰冻计时，效果结束时恢复首次受影响前的速度。 */
+    public void tickEffects() {
+        if (freezeTicks > 0 && --freezeTicks == 0) {
+            speedX = originalSpeedX;
+            speedY = originalSpeedY;
+            isFrozen = false;
+            freezeEffectActive = false;
         }
     }
 }

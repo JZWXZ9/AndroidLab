@@ -9,7 +9,8 @@ import java.util.List;
 public class EnemyGenerator {
     public final List<AbstractEnemyFactory> FACTORY = new LinkedList<>();
     private static EnemyGenerator generator;
-    private EnemyGenerator() {
+    /** 为一局游戏创建各类敌机工厂，各工厂在本局内累计生成概率。 */
+    public EnemyGenerator() {
         FACTORY.add(new EliteProMobEnemyFactory());
         FACTORY.add(new ElitePlusMobEnemyFactory());
         FACTORY.add(new EliteTrackingMobEnemyFactory());

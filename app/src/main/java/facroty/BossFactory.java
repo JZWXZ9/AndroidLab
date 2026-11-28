@@ -15,7 +15,7 @@ public class BossFactory extends AbstractEnemyFactory{
         this.probabilityForEnemySpawning = 100;
         this.defaultSpawningProbability = 100;
         this.probabilityIncrement = 0;
-        this.speedX = random.nextInt(3,8);
+        this.speedX = random.nextInt(5) + 3;
         this.speedY = 0;
         this.hp = 10000;
         this.origHp = this.hp;

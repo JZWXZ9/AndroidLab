@@ -8,7 +8,7 @@ public class PropsFactory {
     public static AbstractProps createProps(String name, int locationX, int locationY) {
         return switch (name) {
             case "BloodProps" -> {
-                int increasementOfHp = 50 + random.nextInt(-10, 10);
+                int increasementOfHp = 50 + random.nextInt(20) - 10;
                 yield new BloodProps(locationX, locationY, increasementOfHp);
             }
             case "BulletProps" -> new BulletProps(locationX, locationY);
